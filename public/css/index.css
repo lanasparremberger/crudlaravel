@@ -1,0 +1,285 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
+.era {
+    padding: 40px;
+    border-radius: 16px;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.era:hover {
+    transform: scale(1.08) rotate(-1deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    background: linear-gradient(135deg, #fdf2f8, #e0e7ff);
+    font-family: "Montserrat", sans-serif;
+}
+
+/* cards giratorios */
+
+.card {
+    perspective: 1000px;
+    height: 340px;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.card:hover .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 16px;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+}
+
+.album {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    animation: spin 12s linear infinite;
+    transition: transform 0.4s;
+}
+
+.album:hover {
+    animation-play-state: paused;
+    transform: scale(1.1);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(80px);
+    transition: all 1s ease;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.era {
+    color: white;
+    font-weight: bold;
+    padding: 40px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
+.era:hover {
+    transform: scale(1.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+/* 🌈 Gradiente animado */
+.animated-bg {
+    background: linear-gradient(270deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+    background-size: 800% 800%;
+    animation: gradientMove 15s ease infinite;
+    z-index: -2;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* ✨ Partículas (estrelas) */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: -1;
+}
+
+.stars::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    box-shadow:
+        100px 200px white,
+        300px 400px white,
+        500px 100px white,
+        700px 300px white,
+        900px 200px white;
+    animation: floatStars 10s linear infinite;
+}
+
+@keyframes floatStars {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-1000px);
+    }
+}
+
+/* 💫 Botões */
+.social-btn {
+    padding: 10px 18px;
+    border-radius: 12px;
+    color: white;
+    transition: 0.3s;
+    transform: scale(1);
+}
+
+.social-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ✨ Fade-in */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 1s ease-out;
+}
+.card-3d {
+    width: 260px;
+    height: 320px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.card-content {
+    padding: 20px;
+    transform: translateZ(40px);
+}
+
+.glare {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+h1{
+    font-family: 'Playfair Display', serif;
+}
+
+
+
+/* animação dos cards */
+.timeline-item {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: all 0.8s ease;
+}
+
+.timeline-item.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 0;
+    border-radius: 999px;
+
+    background: linear-gradient(
+        to bottom,
+        #22c55e,   /* Debut */
+        #facc15,   /* Fearless */
+        #a855f7,   /* Speak Now */
+        #ef4444,   /* Red */
+        #38bdf8,   /* 1989 */
+        #111827,   /* Reputation */
+        #ec4899,   /* Lover */
+        #9ca3af,   /* Folklore */
+        #92400e,   /* Evermore */
+        #4f46e5,   /* Midnights */
+        #1f2937,   /* TTPD */
+        #ff9100    /* Showgirl */
+    );
+
+    transition: height 0.4s ease-out, box-shadow 0.3s;
+}
+
+/* brilho no hover */
+.timeline-line:hover {
+    box-shadow: 0 0 20px rgba(255, 0, 170, 0.6),
+                0 0 40px rgba(236, 72, 153, 0.4);
+}
+.timeline-item .rounded-full {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-item:hover .rounded-full {
+    transform: scale(1.4);
+    box-shadow: 0 0 15px currentColor;
+}
+
+/* glow por era */
+.glow-green:hover { box-shadow: 0 0 25px #22c55e; }
+.glow-yellow:hover { box-shadow: 0 0 25px #facc15; }
+.glow-purple:hover { box-shadow: 0 0 25px #a855f7; }
+.glow-red:hover { box-shadow: 0 0 25px #ef4444; }
+.glow-blue:hover { box-shadow: 0 0 25px #38bdf8; }
+.glow-black:hover { box-shadow: 0 0 25px #111827; }
+.glow-pink:hover { box-shadow: 0 0 25px #ec4899; }
+.glow-gray:hover { box-shadow: 0 0 25px #9ca3af; }
+.glow-brown:hover { box-shadow: 0 0 25px #92400e; }
+.glow-indigo:hover { box-shadow: 0 0 25px #4f46e5; }
+.glow-showgirl:hover {
+    box-shadow: 0 0 30px #ff9900, 0 0 60px #ffb066;
+}
