@@ -67,10 +67,12 @@ class MusicController extends Controller
     abort(403);
 }
         $request->validate($musica->rules, $musica->messages);
+        
         if ($request->hasFile('image')) {
+            
             if ($musica->getAttributes()['image'] != NULL)
                 Storage::disk('public')->delete($musica->getAttributes()['image']);
-            $novoNome = $request->file('image')->store('imagens', 'public');
+            $novoNome = $request->file('image')->store('images', 'public');
             $dados['image'] = $novoNome;
         } else
             unset($dados['image']);
@@ -83,10 +85,10 @@ class MusicController extends Controller
 
     public function edita($id)
     {
-        $musica = Music::find($id);
-        if ($musica->user_id != Auth::id()) {
+        $music = Music::find($id);
+        if ($music->user_id != Auth::id()) {
     abort(403);
 }
-        return view('editaMusic', compact('musica'));
+        return view('editaMusic', compact('music'));
     }
 }
