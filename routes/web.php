@@ -13,6 +13,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/musicas', [MusicController::class, 'index'])->name('listagem');
+Route::get('/criar', [MusicController::class, 'criar'])->name('form');
+Route::get('/edita/{id}', [MusicController::class, 'edita'])->name('editaMusic');
+Route::post('/atualiza/{id}', [MusicController::class, 'atualiza'])->name('atualizaMusic');
+
+Route::post('/musicas/salvar', [MusicController::class, 'salvar'])->name('music.salvar');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

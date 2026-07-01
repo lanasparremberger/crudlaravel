@@ -17,10 +17,22 @@ class Music extends Model
         'image',
     ];
     public $rules = [
-'title' => 'required|min:1|max:100',
-'artist' => 'required',
-'image' => 'required',
-];
+        'title'  => 'required|string|max:100',
+        'artist' => 'required|string|max:100',
+        'album'  => 'required|string|max:100',
+        'genre'  => 'required|string|max:50',
+        'image'  => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
+    ];
+    public $messages = [
+        'title.required' => 'O título é obrigatório.',
+        'artist.required' => 'O artista é obrigatório.',
+        'album.required' => 'O álbum é obrigatório.',
+        'genre.required' => 'O gênero é obrigatório.',
+        'image.required' => 'A imagem é obrigatória.',
+        'image.image' => 'O arquivo deve ser uma imagem.',
+        'image.mimes' => 'A imagem deve ser JPG, JPEG, PNG ou WEBP.',
+        'image.max' => 'A imagem deve ter no máximo 2 MB.',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);

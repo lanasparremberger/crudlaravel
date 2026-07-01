@@ -1,807 +1,369 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Swiftly</title>
+    <title>MusicCRUD — Índice do Projeto</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/x-icon" href="{{ asset('imgs/link/icon.png') }}">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        blush: '#FFF3F6',
+                        petal: '#FFD3E1',
+                        rose: '#EC5A93',
+                        wine: '#7A1F44',
+                        plum: '#5C1638',
+                        gold: '#D8A863',
+                    },
+                    fontFamily: {
+                        display: ['Fraunces', 'serif'],
+                        body: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
 
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .vinyl {
+            animation: spin-slow 10s linear infinite;
+        }
+
+        .vinyl-group:hover .vinyl {
+            animation-play-state: paused;
+        }
+
+        .vinyl-group:hover .tonearm {
+            transform: rotate(-8deg);
+        }
+
+        .tonearm {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: 88% 12%;
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: .35;
+            }
+
+            90% {
+                opacity: .35;
+            }
+
+            100% {
+                transform: translateY(-140px) rotate(15deg);
+                opacity: 0;
+            }
+        }
+
+        .note {
+            animation: drift 9s ease-in-out infinite;
+        }
+
+        .leader {
+            flex: 1;
+            border-bottom: 1.5px dotted rgba(122, 31, 68, 0.35);
+            margin: 0 .75rem;
+            transform: translateY(-4px);
+        }
+
+        .track-row {
+            position: relative;
+        }
+
+        .track-row::before {
+            content: '';
+            position: absolute;
+            left: -1.25rem;
+            right: -1.25rem;
+            top: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(236, 90, 147, 0.07), transparent);
+            opacity: 0;
+            transition: opacity .3s ease;
+            border-radius: 0.75rem;
+        }
+
+        .track-row:hover::before {
+            opacity: 1;
+        }
+
+        .track-row:hover .track-num {
+            color: #EC5A93;
+        }
+
+        .track-row:hover .track-page {
+            color: #7A1F44;
+        }
+
+        ::selection {
+            background: #F7B8D0;
+            color: #5C1638;
+        }
+
+        #topnav {
+            transition: box-shadow .3s ease, background-color .3s ease;
+        }
+
+        #topnav.scrolled {
+            background-color: rgba(255, 243, 246, 0.85);
+            box-shadow: 0 8px 24px -12px rgba(122, 31, 68, 0.25);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .vinyl {
+                animation: none;
+            }
+
+            .note {
+                animation: none;
+            }
+        }
+    </style>
 </head>
 
-<body class="font-sans text-gray-800">
-    <canvas id="stars" class="fixed inset-0 -z-10"></canvas>
+<body class="font-body bg-blush text-plum antialiased">
 
-    <!-- PARTICULAS -->
+    <!-- background texture -->
+    <div class="fixed inset-0 -z-10 bg-gradient-to-br from-blush via-[#FFE7EF] to-petal"></div>
+    <div class="fixed -top-24 -right-24 w-[420px] h-[420px] rounded-full bg-petal/40 blur-3xl -z-10"></div>
+    <div class="fixed -bottom-32 -left-24 w-[380px] h-[380px] rounded-full bg-rose/10 blur-3xl -z-10"></div>
 
-    <div id="particles" class="fixed inset-0 -z-10"></div>
+    <!-- floating notes -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <span class="note absolute left-[12%] top-[70%] text-2xl text-rose/50" style="animation-delay:0s">♪</span>
+        <span class="note absolute left-[85%] top-[65%] text-3xl text-wine/40" style="animation-delay:3s">♫</span>
+        <span class="note absolute left-[50%] top-[80%] text-xl text-rose/40" style="animation-delay:6s">♩</span>
+    </div>
 
-    <!-- NAVBAR -->
-
-    @include('components/header')
-
-    <!-- HERO -->
-
-    <section class="relative h-screen overflow-hidden">
-
-        <div id="slider" class="absolute inset-0">
-
-            <img src="{{ asset('imgs/hero/taylortheeras.webp') }}"
-                class="slide absolute w-full h-full object-cover opacity-100 transition-opacity duration-1000">
-
-            <img src="{{ asset('imgs/hero/taylordorothea.jpg') }}"
-                class="slide absolute w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-
-            <img src="{{ asset('imgs/hero/taylorred.jpg') }}"
-                class="slide absolute w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-
-        </div>
-
-        <div class="absolute inset-0 bg-black/50"></div>
-
-        <div class="relative z-10 h-full flex flex-col justify-center items-center text-white text-center">
-
-            <h1 class="text-6xl font-extrabold mb-6">
-                Taylor Swift
-            </h1>
-
-            <p class="text-xl max-w-xl">
-                As eras, álbuns e momentos icônicos do pop moderno.
-            </p>
-
-        </div>
-
-    </section>
-    <!-- TAYLOR -->
-    <!-- NAV SEÇÕES -->
-    <nav class="w-full bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-20">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-center space-x-8 font-semibold text-gray-700">
-
-            <a href="#eras" class="hover:text-pink-500 transition">
-                Eras
+    <!-- ============ HEADER ============ -->
+    <header id="topnav" class="sticky top-0 z-30 backdrop-blur-sm">
+        <nav class="max-w-5xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2.5 group">
+                <span
+                    class="w-8 h-8 rounded-full bg-wine flex items-center justify-center text-blush text-sm group-hover:bg-rose transition-colors">♫</span>
+                <span class="font-display font-semibold text-lg text-wine tracking-tight">Music<span
+                        class="text-rose">CRUD</span></span>
             </a>
+            <div class="hidden sm:flex items-center gap-8 font-mono text-[11px] uppercase tracking-widest text-plum/60">
+                <a href="#indice" class="hover:text-rose transition-colors">Índice</a>
+                <a href="#stack" class="hover:text-rose transition-colors">Stack</a>
+                <a href="#" class="hover:text-rose transition-colors">Repositório</a>
+            </div>
+            <a href="#indice" class="sm:hidden font-mono text-[11px] uppercase tracking-widest text-rose">Índice ↓</a>
+        </nav>
+    </header>
 
-            <a href="#musicas" class="hover:text-purple-500 transition">
-                Músicas
-            </a>
+    <main class="min-h-screen flex items-center justify-center px-5 py-12 sm:py-16">
+        <div class="w-full max-w-3xl">
 
-            <a href="#posts" class="hover:text-indigo-500 transition">
-                Posts
-            </a>
+            <!-- capa / hero -->
+            <div class="text-center mb-14 sm:mb-16">
+                <p class="font-mono text-[11px] sm:text-xs tracking-[0.35em] text-rose uppercase mb-5">Projeto Acadêmico
+                    · Sistema CRUD em Laravel</p>
 
-            <a href="#qsn" class="hover:text-sky-500 transition">
-                Quem somos?
-            </a>
-
-        </div>
-    </nav>
-
-   
-
-    <section id=" reveal" class="py-24">
-
-        <h2 id="eras" class="text-4xl font-bold text-center mb-16 text-purple-600">
-            Álbuns da Taylor
-        </h2>
-
-        <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/debut.jpg') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-lime-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Taylor Swift (debut)<br>
-                            O ínicio da jornada country.
-                        </p>
-                    </div>
-
+                <div class="flex items-center justify-center gap-4 sm:gap-6 mb-6">
+                    <span class="hidden sm:block h-px w-16 bg-wine/25"></span>
+                    <h1 class="font-display italic text-4xl sm:text-6xl text-wine leading-[1.05] tracking-tight">
+                        Catálogo <span class="not-italic font-semibold text-rose">Musical</span>
+                    </h1>
+                    <span class="hidden sm:block h-px w-16 bg-wine/25"></span>
                 </div>
 
+                <p class="font-body text-sm sm:text-base text-plum/60 max-w-md mx-auto">
+                    Um sistema de gerenciamento de músicas, artistas e álbuns — construído com Laravel, do cadastro à
+                    exclusão.
+                </p>
             </div>
 
-
-
-
-
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/fearless.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-yellow-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Fearless<br>
-                            O country romântico e cheio de hits.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/speaknow.jpg') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-violet-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Speak Now<br>
-                            O pop country cheio de histórias pessoais.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/red.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-red-400 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Red<br>
-                            A transição para o pop e o country moderno.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/nineteen.avif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-sky-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            1989<br>
-                            A era pop que mudou tudo.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/reputation.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-gray-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Reputation<br>
-                            Volta por cima com uma era mais sombria e cheia de hits.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/lover.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-pink-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Lover<br>
-                            Romance, cores e liberdade.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/folklore.avif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-zinc-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Folklore<br>
-                            Indie instrumental e letras introspectivas.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/evermore.avif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-yellow-600 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Evermore<br>
-                            A continuação do folklore, com mais histórias e atmosferas.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/fearlesstv.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-amber-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Fearless (Taylor's Version)<br>
-                            A regravação do clássico com novas faixas e uma nova perspectiva.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/redtv.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-red-300 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Red (Taylor's Version)<br>
-                            A regravação do álbum que marcou a transição para o pop, com novas faixas e uma nova
-                            perspectiva.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/midnights.avif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-blue-300 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Midnights<br>
-                            Noites, pensamentos e introspecção.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/speaknowtv.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-indigo-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            Speak Now (Taylor's Version)<br>
-                            Album regravado com novas faixas e uma nova perspectiva sobre a fase country pop.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/1989tv.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-blue-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            1989 (Taylor's Version)<br>
-                            A regravação do álbum que mudou tudo, com novas faixas e uma nova perspectiva sobre a era
-                            pop.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/ttpd.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-stone-200 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            The Tortured Poets Department<br>
-                            A era com uma vibe mais sombria e poética.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-inner">
-
-                    <div class="card-front bg-white shadow-xl flex items-center justify-center">
-                        <img src="{{ asset('imgs/albuns/showgirl.jfif') }}" class="w-52 rounded-xl">
-                    </div>
-
-                    <div class="card-back bg-orange-300 flex items-center justify-center text-center p-6">
-                        <p class="font-bold text-lg">
-                            The Life of a Showgirl<br>
-                            A era com uma vibe mais teatral e glamourosa.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-        </div>
-
-    </section>
-
-    <!-- linha do tempo -->
-
-    <section id="timeline" class="py-28">
-
-        <h2 class="text-5xl font-extrabold text-center mb-24">
-            Linha do Tempo — Eras da Taylor Swift
-        </h2>
-
-        <div class="relative max-w-6xl mx-auto">
-
-            <!-- linha animada -->
-            <div id="timeline-line" class="timeline-line"></div>
-
-            <!-- linha base (fundo) -->
-            <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-pink-200"></div>
-
-            <!-- linha central -->
-            <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-pink-400"></div>
-
-            <!-- ITEM -->
-            <!-- usa essa classe "timeline-item" pra animar -->
-
-            <!-- Debut -->
-            <div class="timeline-item mb-16 flex justify-between items-center w-full">
-
-                <div class="w-5/12"></div>
-
-                <div class="z-10 bg-green-500 w-6 h-6 rounded-full"></div>
-
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-green">
-                    <h3 class="text-xl font-bold text-green-600">2006 — Debut</h3>
-                    <p class="text-gray-600 mt-2">
-                        Início country com letras autobiográficas.
-                    </p>
-                </div>
-
-            </div>
-
-            <!-- Fearless -->
-            <div class="timeline-item mb-16 flex justify-between flex-row-reverse items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-yellow-400 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-yellow">
-                    <h3 class="text-xl font-bold text-yellow-500">2008 — Fearless</h3>
-                    <p class="text-gray-600 mt-2">Hits como Love Story. Grammy AOTY.</p>
-                </div>
-            </div>
-
-            <!-- Speak Now -->
-            <div class="timeline-item mb-16 flex justify-between items-center w-full">
-                <div class="w-5/12 "></div>
-                <div class="z-10 bg-purple-500 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-purple">
-                    <h3 class="text-xl font-bold text-purple-600">2010 — Speak Now</h3>
-                    <p class="text-gray-600 mt-2">Totalmente escrito por ela. Era roxa icônica.</p>
-                </div>
-            </div>
-
-            <!-- Red -->
-            <div class="timeline-item mb-16 flex justify-between flex-row-reverse items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-red-500 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-red">
-                    <h3 class="text-xl font-bold text-red-500">2012 — Red</h3>
-                    <p class="text-gray-600 mt-2">Mistura de estilos. All Too Well marcou época.</p>
-                </div>
-            </div>
-
-            <!-- 1989 -->
-            <div class="timeline-item mb-16 flex justify-between items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-sky-400 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-blue">
-                    <h3 class="text-xl font-bold text-sky-500">2014 — 1989</h3>
-                    <p class="text-gray-600 mt-2">Virada total pro pop.</p>
-                </div>
-            </div>
-
-            <!-- Reputation -->
-            <div class="timeline-item mb-16 flex justify-between flex-row-reverse items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-gray-900 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-black">
-                    <h3 class="text-xl font-bold text-gray-900">2017 — Reputation</h3>
-                    <p class="text-gray-600 mt-2">Era dark, vingança e reinvenção.</p>
-                </div>
-            </div>
-
-            <!-- Lover -->
-            <div class="timeline-item mb-16 flex justify-between items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-pink-400 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-pink">
-                    <h3 class="text-xl font-bold text-pink-500">2019 — Lover</h3>
-                    <p class="text-gray-600 mt-2">Colorido, romântico e leve.</p>
-                </div>
-            </div>
-
-            <!-- Folklore -->
-            <div class="timeline-item mb-16 flex justify-between flex-row-reverse items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-gray-400 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-gray">
-                    <h3 class="text-xl font-bold text-gray-500">2020 — Folklore</h3>
-                    <p class="text-gray-600 mt-2">Indie/folk introspectivo.</p>
-                </div>
-            </div>
-
-            <!-- Evermore -->
-            <div class="timeline-item mb-16 flex justify-between items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-amber-700 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-brown">
-                    <h3 class="text-xl font-bold text-amber-700">2020 — Evermore</h3>
-                    <p class="text-gray-600 mt-2">Continuação do folklore, mais madura.</p>
-                </div>
-            </div>
-
-            <!-- Midnights -->
-            <div class="timeline-item mb-16 flex justify-between flex-row-reverse items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-indigo-600 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12  bg-white p-6 rounded-xl shadow-lg glow-indigo">
-                    <h3 class="text-xl font-bold text-indigo-600">2022 — Midnights</h3>
-                    <p class="text-gray-600 mt-2">Noites, pensamentos e synth-pop.</p>
-                </div>
-            </div>
-
-            <!-- The Tortured Poets Department -->
-            <div class="timeline-item mb-16 flex justify-between items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-neutral-800 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-gray">
-                    <h3 class="text-xl font-bold text-neutral-800">2024 — The Tortured Poets Department</h3>
-                    <p class="text-gray-600 mt-2">Era introspectiva, lírica e mais crua emocionalmente.</p>
-                </div>
-            </div>
-
-            <!-- The Life of a Showgirl -->
-            <div class="timeline-item mb-16 flex justify-between flex-row-reverse items-center w-full">
-                <div class="w-5/12"></div>
-                <div class="z-10 bg-orange-500 w-6 h-6 rounded-full"></div>
-                <div class="w-5/12 bg-white p-6 rounded-xl shadow-lg glow-showgirl">
-                    <h3 class="text-xl font-bold text-orange-600">2025 — The Life of a Showgirl</h3>
-                    <p class="text-gray-600 mt-2">Era glamourosa e teatral inspirada na vida no palco e na fama.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="musicas" class="py-20 text-center">
-
-        <h2 class="text-4xl font-bold mb-10">
-            Ouça as músicas
-        </h2>
-
-        <div class="flex flex-wrap justify-center gap-10">
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/53iuhJlwXhSER5J2IYYv1W"
-                width="300" height="80" allowfullscreen="" loading="lazy"></iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0V3wPSX9ygBnCm8psDIegu"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3yWuTOYDztXjZxdE2cIRUa"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/1BxfuPKGuaTgP7aM0Bbdwr"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0ug5NqcwcFR2xrfTkc7k8e"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4R2kfaDFhslZEMJqAFNpdd"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2OzhQlSqBEmt7hmkYxfT6m"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/1R0a2iXumgCiFb7HEZ7gUE"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/786NsUYn4GGUf8AOt0SQhP"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-
-            </iframe>
-
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/57w0Uyk2jJAkO2hMJ36xJZ"
-                width="300" height="80" allowfullscreen="" loading="lazy">
-
-            </iframe>
-
-        </div>
-
-    </section>
-
-    <section class="py-28 text-center">
-
-        <h2
-            class="text-5xl font-extrabold mb-16 
-    bg-gradient-to-r from-pink-500 to-purple-600 
-    bg-clip-text text-transparent">
-
-            Mapa das Eras
-
-        </h2>
-
-        <div class="grid md:grid-cols-5 sm:grid-cols-2 gap-6 max-w-6xl mx-auto">
-
-            <div onclick="setEra('debut')" class="era bg-green-500">
-                Debut
-            </div>
-
-            <div onclick="setEra('fearless')" class="era bg-yellow-400 text-black">
-                Fearless
-            </div>
-
-            <div onclick="setEra('speaknow')" class="era bg-purple-600">
-                Speak Now
-            </div>
-
-            <div onclick="setEra('red')" class="era bg-red-500">
-                Red
-            </div>
-
-            <div onclick="setEra('1989')" class="era bg-sky-400">
-                1989
-            </div>
-
-            <div onclick="setEra('reputation')" class="era bg-gray-900">
-                Reputation
-            </div>
-
-            <div onclick="setEra('lover')" class="era bg-pink-400">
-                Lover
-            </div>
-
-            <div onclick="setEra('folklore')" class="era bg-gray-400 text-black">
-                Folklore
-            </div>
-
-            <div onclick="setEra('evermore')" class="era bg-amber-700">
-                Evermore
-            </div>
-
-            <div onclick="setEra('midnights')" class="era bg-indigo-700">
-                Midnights
-            </div>
-
-            <div onclick="setEra('ttpd')" class="era bg-stone-300 text-black">
-                TTPD
-            </div>
-
-            <div onclick="setEra('showgirl')" class="era bg-orange-400">
-                Showgirl
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- posts -->
-    {{-- todo add os posts aq tirados do banco --}}
-    <section id="posts" class="py-24">
-
-        <h2 class="text-4xl font-bold text-center mb-16">
-            The Life of the Swifties
-        </h2>
-
-        <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-
-
-            <img src="https://image.stern.de/34908840/t/AU/v5/w1440/r1.7778/-/taylorswift.jpg"
-                class="rounded-xl hover:scale-105 transition">
-
-            <img src="https://s2-oglobo.glbimg.com/yMt5cSlX8RcKaIbuQTODJ9r_5p4=/0x0:1193x732/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2024/R/1/r9SaB3QXqA4LTto1cd8g/105475182-topshot-us-singer-songwriter-taylor-swift-arrives-for-the-81st-annual-golden-globe-a.jpg"
-                class="rounded-xl hover:scale-105 transition">
-
-            <img src="https://images.impresa.pt/expresso/2025-12-12-taylor-swift.jpg-a5ce4154/original"
-                class="rounded-xl hover:scale-105 transition">
-
-        </div>
-
-    </section>
-
-    <section id="qsn" class="relative py-32 overflow-hidden">
-
-        <div class="absolute inset-0 animated-bg"></div>
-
-        <div class="stars"></div>
-
-        <div class="relative max-w-6xl mx-auto px-6">
-
-            <h2 class="text-center text-4xl md:text-5xl font-bold text-white mb-6">
-                Feito com my blood, sweat and tears for this
-            </h2>
-
-            <p class="text-center text-white/80 mb-16">
-                Valeu ai pro Roger que não me xingou quando eu disse que ia fazer <i> outro </i> site da loirinha. (Ele
-                xingou, eu que ignorei)
-            </p>
-
-            <!-- 🪩 Glass Card -->
-            <div class="grid md:grid-cols-2 gap-10 items-center">
-
-                <!-- TEXTO -->
-                <div
-                    class="backdrop-blur-xl bg-white/10 p-8 rounded-3xl shadow-2xl border border-white/20 animate-fade-in">
-
-                    <h3 class="text-2xl font-bold text-white mb-4">
-                        Sobre o Projeto
-                    </h3>
-
-                    <p class="text-white/80 leading-relaxed">
-                        Esse site foi criado para reunir eras, álbuns e momentos icônicos.
-                        Um espaço feito por fãs, para fãs
-                    </p>
-
-                    <!-- LINKS -->
-                    <div class="flex gap-4 mt-6 flex-wrap">
-
-                        <a href="https://github.com/lanasparremberger" target="_blank"
-                            class="social-btn bg-orange-300/80 hover:bg-orange-300">
-                            <i class="fa-brands fa-github"></i>
-                        </a>
-
-                        <a href="https://www.instagram.com/lana.sparremberger/" target="_blank"
-                            class="social-btn bg-pink-500/80 hover:bg-pink-500">
-                            <i class="fa-brands fa-instagram"></i>
-                        </a>
-
-                        <a href="https://x.com/evermorepeeta" target="_blank"
-                            class="social-btn bg-blue-400/80 hover:bg-blue-400">
-                            <i class="fa-brands fa-twitter" style="color: rgb(255, 255, 255);"></i>
-                        </a>
-
-                    </div>
-
-                </div>
-
-                <!-- FOTO -->
-                <div class="flex justify-center items-center py-20">
-
-                    <div class="card-3d">
-                        <div class="card-content">
-
-                            <img src="{{ asset('imgs/quemsomosnos/eunatheeras.jpg') }}" alt="Lana Sparremberger"
-                                class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-pink-300 object-cover">
-
-                            <h3 class="text-xl font-bold text-white text-center">
-                                Lana Sparremberger
-                            </h3>
-
-                            <p class="text-white/70 text-center">
-                                Desenvolvedora, <i> swiftie</i> e criadora deste site.
-                            </p>
-
+            <!-- card principal -->
+            <section id="indice"
+                class="relative bg-white/70 backdrop-blur-sm rounded-[28px] border border-white shadow-[0_20px_60px_-15px_rgba(122,31,68,0.25)] px-6 sm:px-12 py-10 sm:py-12 scroll-mt-24">
+
+                <!-- vinyl signature -->
+                <div class="vinyl-group absolute -top-10 -right-6 sm:-top-12 sm:-right-10 select-none">
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28">
+                        <div
+                            class="vinyl absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,#5C1638,#7A1F44_15%,#5C1638_30%,#7A1F44_45%,#5C1638_60%,#7A1F44_75%,#5C1638_90%,#7A1F44_100%)] shadow-lg">
+                            <div class="absolute inset-[32%] rounded-full bg-rose flex items-center justify-center">
+                                <div class="w-2 h-2 rounded-full bg-blush"></div>
+                            </div>
                         </div>
-
-                        <!-- brilho -->
-                        <div class="glare"></div>
+                        <div
+                            class="tonearm absolute -top-1 right-1 w-14 h-1.5 bg-gold rounded-full shadow-sm origin-top-right">
+                        </div>
                     </div>
-
                 </div>
 
+                <div class="flex items-baseline justify-between mb-8 sm:mb-10">
+                    <h2 class="font-display text-2xl sm:text-3xl text-wine font-semibold">Índice</h2>
+                    <span class="font-mono text-[11px] text-plum/40 tracking-widest uppercase">Seção · Página</span>
+                </div>
+
+                <!-- tracklist / índice -->
+                <ol class="space-y-1">
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">01</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Introdução ao Projeto</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">03</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">02</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Modelagem do Banco de Dados</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">05</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">03</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Instalação e Configuração do
+                            Ambiente</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">07</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">04</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Rotas e Controllers</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">09</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">05</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Operações CRUD (Criar, Ler, Atualizar,
+                            Excluir)</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">12</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">06</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Views e Interface do Usuário</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">15</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">07</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Testes e Validações</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">17</span>
+                    </li>
+                    <li class="track-row flex items-center py-3 px-2 rounded-xl">
+                        <span class="track-num font-mono text-sm text-plum/40 w-7 transition-colors">08</span>
+                        <span class="font-display text-lg sm:text-xl text-plum">Conclusão e Referências</span>
+                        <span class="leader"></span>
+                        <span class="track-page font-mono text-sm text-plum/50 transition-colors">19</span>
+                    </li>
+                </ol>
+
+                <!-- waveform divider -->
+                <div class="flex items-end justify-center gap-[3px] h-6 mt-9 mb-1 opacity-50">
+                    <span class="w-[3px] bg-rose rounded-full h-2"></span>
+                    <span class="w-[3px] bg-rose rounded-full h-4"></span>
+                    <span class="w-[3px] bg-wine rounded-full h-5"></span>
+                    <span class="w-[3px] bg-rose rounded-full h-3"></span>
+                    <span class="w-[3px] bg-wine rounded-full h-6"></span>
+                    <span class="w-[3px] bg-rose rounded-full h-3"></span>
+                    <span class="w-[3px] bg-wine rounded-full h-5"></span>
+                    <span class="w-[3px] bg-rose rounded-full h-2"></span>
+                    <span class="w-[3px] bg-wine rounded-full h-4"></span>
+                </div>
+
+                <!-- liner notes / metadados -->
+                <div
+                    class="mt-8 pt-6 border-t border-wine/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
+                    <div>
+                        <p class="font-mono text-[10px] uppercase tracking-widest text-plum/40 mb-1">Aluno(a)</p>
+                        <p class="font-body text-sm text-plum/80">[Nome do aluno]</p>
+                    </div>
+                    <div>
+                        <p class="font-mono text-[10px] uppercase tracking-widest text-plum/40 mb-1">Professor(a)</p>
+                        <p class="font-body text-sm text-plum/80">[Nome do professor]</p>
+                    </div>
+                    <div>
+                        <p class="font-mono text-[10px] uppercase tracking-widest text-plum/40 mb-1">Turma / Data</p>
+                        <p class="font-body text-sm text-plum/80">[Turma — 2026]</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- stack -->
+            <div id="stack" class="flex flex-wrap justify-center gap-2.5 mt-8 scroll-mt-24">
+                <span
+                    class="font-mono text-[11px] tracking-wide bg-white/70 border border-wine/10 text-wine px-3 py-1.5 rounded-full">Laravel</span>
+                <span
+                    class="font-mono text-[11px] tracking-wide bg-white/70 border border-wine/10 text-wine px-3 py-1.5 rounded-full">PHP</span>
+                <span
+                    class="font-mono text-[11px] tracking-wide bg-white/70 border border-wine/10 text-wine px-3 py-1.5 rounded-full">MySQL</span>
+                <span
+                    class="font-mono text-[11px] tracking-wide bg-white/70 border border-wine/10 text-wine px-3 py-1.5 rounded-full">Blade</span>
+                <span
+                    class="font-mono text-[11px] tracking-wide bg-white/70 border border-wine/10 text-wine px-3 py-1.5 rounded-full">Tailwind
+                    CSS</span>
             </div>
+
         </div>
+    </main>
 
+    <!-- ============ FOOTER ============ -->
+    <footer class="mt-16 border-t border-wine/10 bg-white/50">
+        <div class="max-w-5xl mx-auto px-5 sm:px-8 py-10">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-2.5">
+                    <span
+                        class="w-7 h-7 rounded-full bg-wine flex items-center justify-center text-blush text-xs">♫</span>
+                    <span class="font-display font-semibold text-base text-wine">Music<span
+                            class="text-rose">CRUD</span></span>
+                </div>
 
-    </section>
+                <div class="flex items-end justify-center gap-[3px] h-5 opacity-40">
+                    <span class="w-[2.5px] bg-rose rounded-full h-2"></span>
+                    <span class="w-[2.5px] bg-wine rounded-full h-3.5"></span>
+                    <span class="w-[2.5px] bg-rose rounded-full h-2.5"></span>
+                    <span class="w-[2.5px] bg-wine rounded-full h-4"></span>
+                    <span class="w-[2.5px] bg-rose rounded-full h-2"></span>
+                </div>
 
+                <div class="font-mono text-[11px] uppercase tracking-widest text-plum/50 flex gap-6">
+                    <a href="#indice" class="hover:text-rose transition-colors">Índice</a>
+                    <a href="#stack" class="hover:text-rose transition-colors">Stack</a>
+                    <a href="#" class="hover:text-rose transition-colors">GitHub</a>
+                </div>
+            </div>
 
+            <p class="text-center font-mono text-[10px] tracking-widest text-plum/35 uppercase mt-8">
+                © 2026 MusicCRUD · Projeto acadêmico desenvolvido em Laravel
+            </p>
+        </div>
+    </footer>
 
-    <script src="{{ asset('script/index.js') }}"></script>
+    <script>
+        const nav = document.getElementById('topnav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 10);
+        });
+    </script>
 
 </body>
 

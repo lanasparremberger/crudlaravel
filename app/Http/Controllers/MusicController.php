@@ -29,11 +29,17 @@ class MusicController extends Controller
 
 
     public function index()
-{
-    $musics = Music::paginate(9);
+    {
+        $musics = Music::paginate(9);
 
-    return view('listagem', compact('musics'));
-}
+        return view('listagem', compact('musics'));
+    }
+
+    public function criar()
+    {
+
+        return view('form');
+    }
 
     public function apaga($id)
     {
