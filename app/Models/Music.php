@@ -21,7 +21,7 @@ class Music extends Model
         'artist' => 'required|string|max:100',
         'album'  => 'required|string|max:100',
         'genre'  => 'required|string|max:50',
-        'image'  => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
+        'image'  => 'required|image|mimes:jpg,jpeg,png,webp,gif',
     ];
     public $messages = [
         'title.required' => 'O título é obrigatório.',
@@ -31,7 +31,6 @@ class Music extends Model
         'image.required' => 'A imagem é obrigatória.',
         'image.image' => 'O arquivo deve ser uma imagem.',
         'image.mimes' => 'A imagem deve ser JPG, JPEG, PNG ou WEBP.',
-        'image.max' => 'A imagem deve ter no máximo 2 MB.',
     ];
     public function user()
     {

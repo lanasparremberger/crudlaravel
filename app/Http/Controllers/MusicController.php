@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Music;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class MusicController extends Controller
 {
     public function salvar(Request $request)
     {
         $dados = $request->except('_token', 'submit');
+        $dados['user_id'] = Auth::id();
         $musica = new Music();
         $request->validate($musica->rules, $musica->messages); // aplica regras de validação da model
         if ($request->hasFile('image')) { // testa se foi enviado um image no formulário
@@ -22,9 +24,9 @@ class MusicController extends Controller
         $insert = Music::create($dados);
         if ($insert)
             // Passa uma session flash success (sessão temporária)
-            return redirect()->route('home')->with('success', 'musica inserido com sucesso!');
+            return redirect()->route('listagem')->with('success', 'musica inserido com sucesso!');
         else // Redireciona para a rota de cadstro com uma mensagem de erro
-            return redirect()->route('cadastramusica')->with(['error' => 'Falha ao inserir musica']);
+            return redirect()->route('form')->with(['error' => 'Falha ao inserir musica']);
     }
 
 
@@ -44,19 +46,26 @@ class MusicController extends Controller
     public function apaga($id)
     {
         $musica = Music::find($id);
+
+    if ($musica->user_id != Auth::id()) {
+        abort(403, 'Você não tem permissão para excluir esta música.');
+    }
         if ($musica->getAttributes()['image'] != NULL) // testa se tinha um nome de arquivo no banco
             Storage::disk('public')->delete($musica->getAttributes()['image']);
         $delete = $musica->delete();
         if ($delete)
-            return redirect()->route('home')->with('success', 'musica removido com sucesso!');
+            return redirect()->route('listagem')->with('success', 'musica removido com sucesso!');
         else
-            return redirect()->route('home', $id)->with(['erros' => 'Falha ao remover musica']);
+            return redirect()->route('listagem', $id)->with(['erros' => 'Falha ao remover musica']);
     }
 
     public function atualiza(Request $request, $id)
     {
         $dados = $request->except('_token', 'submit');
         $musica = Music::find($id);
+        if ($musica->user_id != Auth::id()) {
+    abort(403);
+}
         $request->validate($musica->rules, $musica->messages);
         if ($request->hasFile('image')) {
             if ($musica->getAttributes()['image'] != NULL)
@@ -67,7 +76,7 @@ class MusicController extends Controller
             unset($dados['image']);
         $update = $musica->update($dados);
         if ($update)
-            return redirect()->route('home')->with('success', 'musica atualizado com sucesso!');
+            return redirect()->route('listagem')->with('success', 'musica atualizado com sucesso!');
         else
             return redirect()->route('editamusica', $id)->with(['erros' => 'Falha ao editar']);
     }
@@ -75,6 +84,9 @@ class MusicController extends Controller
     public function edita($id)
     {
         $musica = Music::find($id);
-        return view('editamusica', compact('musica'));
+        if ($musica->user_id != Auth::id()) {
+    abort(403);
+}
+        return view('editaMusic', compact('musica'));
     }
 }
