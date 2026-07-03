@@ -11,27 +11,27 @@ class MusicSeeder extends Seeder
     {
         Music::create([
             'user_id' => 1,
-            'title' => 'Bohemian Rhapsody',
-            'artist' => 'Queen',
-            'album' => 'A Night at the Opera',
+            'title' => 'oiii careca',
+            'artist' => 'gremio melhor do mundo',
+            'album' => 'ppi2 > ppi3',
             'genre' => 'Rock',
             'image' => null,
         ]);
 
         Music::create([
             'user_id' => 1,
-            'title' => 'Billie Jean',
-            'artist' => 'Michael Jackson',
-            'album' => 'Thriller',
+            'title' => 'oi orientador',
+            'artist' => 'i love laravel',
+            'album' => 'achei q ia rodar',
             'genre' => 'Pop',
             'image' => null,
         ]);
 
         Music::create([
             'user_id' => 1,
-            'title' => 'The Archer',
-            'artist' => 'Taylor Swift',
-            'album' => 'Lover',
+            'title' => 'oii roger',
+            'artist' => 'podia ter feito um trabalho melhor',
+            'album' => 'me dá um 10 pfv',
             'genre' => 'Pop',
             'image' => null,
         ]);

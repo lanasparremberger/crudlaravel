@@ -10,12 +10,24 @@ export default {
     ],
 
     theme: {
-        extend: {
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-            },
+    extend: {
+        colors: {
+            blush: '#FFF3F6',
+            petal: '#FFD3E1',
+            rose: '#EC5A93',
+            wine: '#7A1F44',
+            plum: '#5C1638',
+            gold: '#D8A863',
+        },
+        fontFamily: {
+            display: ['Fraunces', 'serif'],
+            body: ['Inter', 'sans-serif'],
+        },
+        boxShadow: {
+            soft: '0 20px 45px -20px rgba(122,31,68,0.35)',
         },
     },
+},
 
     plugins: [forms],
 };

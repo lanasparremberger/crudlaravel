@@ -88,10 +88,10 @@
                     <div class="hidden md:flex items-center gap-1 bg-petal/40 rounded-full p-1">
                         <a href="{{ route('listagem') }}"
                             class="px-4 py-1.5 rounded-full text-sm font-medium text-plum/70 hover:text-wine hover:bg-white/80 transition-colors">Listar
-                            Produtos</a>
+                            Músicas</a>
                         <a href="{{ route('form') }}"
                             class="px-4 py-1.5 rounded-full text-sm font-medium text-plum/70 hover:text-wine hover:bg-white/80 transition-colors">Cadastrar
-                            Produtos</a>
+                            Músicas</a>
                     </div>
 
                     <!-- Área do usuário (desktop) -->
